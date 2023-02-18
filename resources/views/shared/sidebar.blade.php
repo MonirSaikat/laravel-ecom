@@ -36,8 +36,11 @@
              <div class="bg-white py-2 collapse-inner rounded">
                  <a class="collapse-item" href="{{ route('dashboard.products.index') }}">Products</a>
                  <a class="collapse-item" href="{{ route('dashboard.products.create') }}">Add Product</a>
+                 <a class="collapse-item" href="{{ route('dashboard.products.create') }}">Categories</a>
+                 <a class="collapse-item" href="{{ route('dashboard.products.create') }}">Add Category</a>
              </div>
          </div>
+         
      </li>
 
  </ul>

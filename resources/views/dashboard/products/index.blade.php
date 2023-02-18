@@ -12,6 +12,7 @@
                 <th>Price</th>
                 <th>Brand</th>
                 <th>Category</th>
+                <th>Quantity</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -48,6 +49,9 @@
                         }, {
                             data: 'category',
                             name: 'category'
+                        }, {
+                            data: 'quantity',
+                            name: 'quantity'
                         }, {
                             data: 'id',
                             name: 'actions',

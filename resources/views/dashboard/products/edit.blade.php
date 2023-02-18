@@ -3,8 +3,9 @@
         Edit product
     </x-page-header>
 
-    <form action="{{ route('dashboard.products.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('dashboard.products.update', $product) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
         <div class="row">
             <div class="col-md-4">
                 <x-input name="name" label="Product Name" value="{{ $product->name }}"></x-input>
@@ -16,10 +17,22 @@
                 <x-input name="price" label="Price" type="number" value="{{ $product->price }}"></x-input>
             </div>
             <div class="col-md-4">
-                <x-select name="category_id" label="Category" :options="$categories" />
+                @php
+                    $options = $categories->map(function ($option) use ($product) {
+                        $option['selected'] = $product->category_id === $option->id;
+                        return $option;
+                    });
+                @endphp
+                <x-select name="category_id" label="Category" :options="$options" />
             </div>
             <div class="col-md-4">
-                <x-select name="brand_id" label="Brand" :options="$brands" />
+                @php
+                    $options = $brands->map(function ($option) use ($product) {
+                        $option['selected'] = $product->brand_id == $option->id;
+                        return $option; 
+                    });
+                @endphp
+                <x-select name="brand_id" label="Brand" :options="$options" />
             </div>
             <div class="col-12">
                 <x-file-input name="image" label="Product Image"></x-file-input>

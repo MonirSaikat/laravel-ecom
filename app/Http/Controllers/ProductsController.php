@@ -13,12 +13,13 @@ class ProductsController extends Controller
         if ($request->ajax()) {
             $data = Product::latest()->get();
 
-            return DataTables::of($data) 
+            return DataTables::of($data)
                 ->addColumn('category', function (Product $product) {
                     return $product->category->name;
-                })->addColumn('brand', function (Product $product) {
-                return $product->brand->name;
-            })
+                })
+                ->addColumn('brand', function (Product $product) {
+                    return $product->brand->name;
+                })
                 ->make(true);
         }
 
@@ -45,7 +46,7 @@ class ProductsController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '.'. $image->extension();
+            $imageName = time() . '.' . $image->extension();
             $image->move(public_path('img/products'), $imageName);
             $product->image = $imageName;
         }
@@ -55,10 +56,47 @@ class ProductsController extends Controller
         return redirect()->route('dashboard.products.index')->with('success', 'Product added successfully');
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'image' => 'nullable|image',
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        $product->name = $request->input('name');
+        $product->description = $request->input('description');
+        $product->price = $request->input('price');
+
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                unlink('img/products/' . $product->image);
+            }
+
+            $image = $request->file('image');
+            $filename = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('img/products/'), $filename);
+            $product->image = $filename;
+        }
+
+        $product->save();
+
+        return redirect()->route('dashboard.products.index')->with('success', 'Product updated');
+    }
+
+
     public function destroy(Request $request, Product $product)
     {
+        // delete image if found
+        if ($product->image && file_exists('img/products/' . $product->image)) {
+            unlink('img/products/' . $product->image);
+        }
+
         $product->delete();
-        return back()->with('success', 'Product deleted'); 
+        return back()->with('success', 'Product deleted');
     }
 
     public function show(Request $request, Product $product)
@@ -68,6 +106,6 @@ class ProductsController extends Controller
 
     public function edit(Request $request, Product $product)
     {
-        return view('dashboard.products.edit', compact('product')); 
+        return view('dashboard.products.edit', compact('product'));
     }
 }
